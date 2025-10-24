@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualización de rutas logísticas y operaciones portuarias</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+        }
+
+        nav a:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        /* Main Content */
+        main {
+            margin-top: 80px;
+            min-height: calc(100vh - 160px);
+        }
+
+        /* Portada Section */
+        .portada {
+            background: linear-gradient(rgba(30, 64, 175, 0.9), rgba(30, 58, 138, 0.9)), 
+                        url('https://images.unsplash.com/photo-1520301640008-000000000000?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 100px 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .portada h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            line-height: 1.2;
+        }
+
+        .portada p {
+            font-size: 1.3rem;
+            margin-bottom: 3rem;
+            max-width: 800px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .fase-buttons {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .fase-btn {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+            border: none;
+            padding: 1.5rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            min-width: 250px;
+            text-align: center;
+        }
+
+        .fase-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .fase-btn:nth-child(2) {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        }
+
+        .fase-btn:nth-child(3) {
+            background: linear-gradient(135deg, #ca8a04 0%, #a16207 100%);
+        }
+
+        .fase-btn:nth-child(4) {
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+        }
+
+        /* Fase Sections */
+        .fase-section {
+            display: none;
+            padding: 50px 0;
+        }
+
+        .fase-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fase-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .fase-header h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.5rem;
+            color: #1e40af;
+            margin-bottom: 1rem;
+        }
+
+        .fase-header p {
+            font-size: 1.2rem;
+            color: #666;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Fase 1 Content */
+        .conceptos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .concepto-card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .concepto-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .concepto-card h3 {
+            color: #1e40af;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .infografia-container {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .puerto-map {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(45deg, #94a3b8, #64748b);
+            border-radius: 10px;
+            position: relative;
+            margin: 2rem 0;
+            overflow: hidden;
+        }
+
+        .zona {
+            position: absolute;
+            width: 120px;
+            height: 80px;
+            background: rgba(30, 64, 175, 0.8);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid white;
+        }
+
+        .zona:hover {
+            background: rgba(30, 64, 175, 1);
+            transform: scale(1.05);
+        }
+
+        .zona-ingreso { top: 50px; left: 50px; }
+        .zona-inspeccion { top: 50px; right: 50px; }
+        .zona-almacenamiento { bottom: 50px; left: 50px; }
+        .zona-embarque { bottom: 50px; right: 50px; }
+
+        .iso-info {
+            background: #f1f5f9;
+            border-left: 4px solid #1e40af;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 0 5px 5px 0;
+            display: none;
+        }
+
+        .video-container {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .video-placeholder {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(45deg, #1e40af, #3b82f6);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            margin: 1rem 0;
+        }
+
+        .cuestionario {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .pregunta {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border-left: 3px solid #1e40af;
+        }
+
+        .pregunta h4 {
+            margin-bottom: 0.5rem;
+            color: #1e40af;
+        }
+
+        .opciones {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .opcion {
+            padding: 0.5rem;
+            background: #f8fafc;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .opcion:hover {
+            background: #e2e8f0;
+        }
+
+        /* Fase 2 Content */
+        .simulacion-tools {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .tool-card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .map-container {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(45deg, #059669, #10b981);
+            border-radius: 10px;
+            margin: 1rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .productos-selector {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        .producto-btn {
+            background: #e2e8f0;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .producto-btn.active {
+            background: #1e40af;
+            color: white;
+        }
+
+        .ruta-info {
+            background: #f1f5f9;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+        }
+
+        .flexsim-container {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(45deg, #dc2626, #ef4444);
+            border-radius: 10px;
+            margin: 1rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .kpis {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .kpi-card {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 5px;
+            text-align: center;
+            border-top: 3px solid #1e40af;
+        }
+
+        .kpi-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e40af;
+        }
+
+        /* Fase 3 Content */
+        .vr-container {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 3rem;
+        }
+
+        .vr-placeholder {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(45deg, #ca8a04, #eab308);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            margin: 1rem 0;
+        }
+
+        .instrucciones {
+            background: #f1f5f9;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+
+        .instrucciones ul {
+            padding-left: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .instrucciones li {
+            margin-bottom: 0.5rem;
+        }
+
+        .contenedores-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .contenedor {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            border: 2px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .contenedor:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .contenedor.aprobado { border-color: #10b981; }
+        .contenedor.revision { border-color: #f59e0b; }
+        .contenedor.no-conforme { border-color: #ef4444; }
+
+        .estado-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .aprobado .estado-icon { color: #10b981; }
+        .revision .estado-icon { color: #f59e0b; }
+        .no-conforme .estado-icon { color: #ef4444; }
+
+        .resumen-vr {
+            background: #f1f5f9;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+        }
+
+        .resumen-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e40af;
+        }
+
+        /* Fase 4 Content */
+        .ia-container {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 3rem;
+        }
+
+        .ia-input {
+            background: #f1f5f9;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .ia-form {
+            display: flex;
+            gap: 1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .ia-input-field {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #cbd5e1;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .ia-submit-btn {
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .ia-submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .ia-results {
+            display: none;
+            margin-top: 2rem;
+        }
+
+        .ruta-completa {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .tramos-ruta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .tramo {
+            background: white;
+            border-radius: 5px;
+            padding: 1rem;
+            border-left: 3px solid #7c3aed;
+        }
+
+        .transporte-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .info-card {
+            background: #f1f5f9;
+            padding: 1rem;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .info-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #7c3aed;
+        }
+
+        .mapa-dinamico {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(45deg, #7c3aed, #a855f7);
+            border-radius: 10px;
+            margin: 1rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .analisis-predictivo {
+            background: #f1f5f9;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 1rem auto;
+            transition: all 0.3s ease;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        /* Banner */
+        .banner {
+            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            font-weight: 500;
+            margin-top: 3rem;
+        }
+
+        /* Footer */
+        footer {
+            background: #1e293b;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .portada h1 {
+                font-size: 2.5rem;
+            }
+
+            .portada p {
+                font-size: 1.1rem;
+            }
+
+            .fase-buttons {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .fase-btn {
+                width: 100%;
+                min-width: auto;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 1rem;
+                background: rgba(30, 58, 138, 0.9);
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                padding: 1rem;
+                display: none;
+            }
+
+            nav ul.active {
+                display: flex;
+            }
+
+            .menu-toggle {
+                display: block;
+                background: none;
+                border: none;
+                color: white;
+                font-size: 1.5rem;
+                cursor: pointer;
+            }
+
+            .simulacion-tools {
+                grid-template-columns: 1fr;
+            }
+
+            .ia-form {
+                flex-direction: column;
+            }
+        }
+
+        .menu-toggle {
+            display: none;
+        }
+
+        /* Back to top button */
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1e40af;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .back-to-top:hover {
+            background: #1e3a8a;
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">LogiPort</div>
+            <button class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <nav>
+                <ul>
+                    <li><a href="#portada">Inicio</a></li>
+                    <li><a href="#fase1">Fase 1</a></li>
+                    <li><a href="#fase2">Fase 2</a></li>
+                    <li><a href="#fase3">Fase 3</a></li>
+                    <li><a href="#fase4">Fase 4</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Portada Section -->
+        <section id="portada" class="portada">
+            <h1>Visualización de rutas logísticas y operaciones portuarias mediante herramientas digitales con enfoque en calidad</h1>
+            <p>Herramientas digitales para una logística portuaria eficiente, trazable y comprometida con la calidad</p>
+            <div class="fase-buttons">
+                <button class="fase-btn" onclick="showSection('fase1')">
+                    <i class="fas fa-book"></i><br>
+                    Fase 1: Conceptos y Normas de Calidad
+                </button>
+                <button class="fase-btn" onclick="showSection('fase2')">
+                    <i class="fas fa-sitemap"></i><br>
+                    Fase 2: Simulación y Modelos Digitales
+                </button>
+                <button class="fase-btn" onclick="showSection('fase3')">
+                    <i class="fas fa-vr-cardboard"></i><br>
+                    Fase 3: Realidad Virtual de Operaciones Portuarias
+                </button>
+                <button class="fase-btn" onclick="showSection('fase4')">
+                    <i class="fas fa-brain"></i><br>
+                    Fase 4: Inteligencia Artificial Predictiva
+                </button>
+            </div>
+        </section>
+
+        <!-- Fase 1: Conceptos y Normas de Calidad -->
+        <section id="fase1" class="fase-section">
+            <div class="container">
+                <div class="fase-header">
+                    <h2>Fase 1: Conceptos y Normas de Calidad</h2>
+                    <p>Explicar los fundamentos de las operaciones portuarias y la aplicación de normas de calidad, especialmente ISO 9001</p>
+                </div>
+
+                <div class="conceptos-grid">
+                    <div class="concepto-card">
+                        <h3><i class="fas fa-ship"></i> Logística Portuaria</h3>
+                        <p>Conjunto de actividades que permiten el movimiento eficiente de mercancías a través de puertos, incluyendo recepción, almacenamiento, manipulación y embarque de carga.</p>
+                    </div>
+                    <div class="concepto-card">
+                        <h3><i class="fas fa-link"></i> Cadena de Suministro</h3>
+                        <p>Red de organizaciones, personas, actividades, información y recursos involucrados en el movimiento de productos desde el proveedor hasta el consumidor final.</p>
+                    </div>
+                    <div class="concepto-card">
+                        <h3><i class="fas fa-check-circle"></i> Control de Calidad</h3>
+                        <p>Proceso sistemático de verificación de que los productos y servicios cumplan con los requisitos especificados y las expectativas del cliente.</p>
+                    </div>
+                </div>
+
+                <div class="infografia-container">
+                    <h3><i class="fas fa-map"></i> Infografía Interactiva: Proceso Portuario</h3>
+                    <p>Haz clic en cada zona para ver la cláusula de ISO 9001 aplicable</p>
+                    <div class="puerto-map">
+                        <div class="zona zona-ingreso" onclick="showISOInfo('ingreso')">
+                            Ingreso de Carga
+                        </div>
+                        <div class="zona zona-inspeccion" onclick="showISOInfo('inspeccion')">
+                            Inspección
+                        </div>
+                        <div class="zona zona-almacenamiento" onclick="showISOInfo('almacenamiento')">
+                            Almacenamiento
+                        </div>
+                        <div class="zona zona-embarque" onclick="showISOInfo('embarque')">
+                            Embarque
+                        </div>
+                    </div>
+                    <div id="iso-info-ingreso" class="iso-info">
+                        <h4>Cláusula ISO 9001: 8.5.1 - Control de la producción y del servicio</h4>
+                        <p>Control de la recepción de mercancías y verificación de documentación.</p>
+                    </div>
+                    <div id="iso-info-inspeccion" class="iso-info">
+                        <h4>Cláusula ISO 9001: 8.6 - Liberación del producto</h4>
+                        <p>Evaluación de conformidad antes del embarque y registro de inspecciones.</p>
+                    </div>
+                    <div id="iso-info-almacenamiento" class="iso-info">
+                        <h4>Cláusula ISO 9001: 7.1.3 - Infraestructura</h4>
+                        <p>Mantenimiento de instalaciones y equipos de almacenamiento.</p>
+                    </div>
+                    <div id="iso-info-embarque" class="iso-info">
+                        <h4>Cláusula ISO 9001: 8.5.5 - Propiedad de cliente</h4>
+                        <p>Custodia y protección de la carga durante el proceso de embarque.</p>
+                    </div>
+                </div>
+
+                <div class="video-container">
+                    <h3><i class="fas fa-video"></i> Video Explicativo</h3>
+                    <h4>Calidad en operaciones portuarias: del estándar a la práctica</h4>
+                    <div class="video-placeholder">
+                        <i class="fas fa-play-circle"></i> Reproducir Video
+                    </div>
+                </div>
+
+                <div class="cuestionario">
+                    <h3><i class="fas fa-question-circle"></i> Mini-Cuestionario</h3>
+                    <div class="pregunta">
+                        <h4>1. ¿Cuál es el propósito principal de la norma ISO 9001 en operaciones portuarias?</h4>
+                        <div class="opciones">
+                            <div class="opcion">A) Reducir costos operativos</div>
+                            <div class="opcion">B) Asegurar la satisfacción del cliente mediante procesos eficientes</div>
+                            <div class="opcion">C) Aumentar la velocidad de embarque</div>
+                        </div>
+                    </div>
+                    <div class="pregunta">
+                        <h4>2. ¿Qué cláusula se aplica al control de la recepción de mercancías?</h4>
+                        <div class="opciones">
+                            <div class="opcion">A) 8.5.1 - Control de la producción y del servicio</div>
+                            <div class="opcion">B) 7.1.3 - Infraestructura</div>
+                            <div class="opcion">C) 8.6 - Liberación del producto</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fase 2: Simulación y Modelos Digitales -->
+        <section id="fase2" class="fase-section">
+            <div class="container">
+                <div class="fase-header">
+                    <h2>Fase 2: Simulación y Modelos Digitales</h2>
+                    <p>Explorar herramientas digitales que simulan procesos logísticos</p>
+                </div>
+
+                <div class="simulacion-tools">
+                    <div class="tool-card">
+                        <h3><i class="fas fa-globe-americas"></i> Mapa Interactivo de Rutas Logísticas</h3>
+                        <p>Visualiza rutas desde Ecuador hacia destinos internacionales</p>
+                        <div class="productos-selector">
+                            <button class="producto-btn active" onclick="selectProducto('banano')">Banano</button>
+                            <button class="producto-btn" onclick="selectProducto('cacao')">Cacao</button>
+                            <button class="producto-btn" onclick="selectProducto('flores')">Flores</button>
+                        </div>
+                        <div class="map-container">
+                            <div>Mapa Interactivo - Ruta: Guayaquil → Rotterdam (Holanda)</div>
+                        </div>
+                        <div class="ruta-info">
+                            <p><strong>Producto:</strong> Banano ecuatoriano</p>
+                            <p><strong>Distancia:</strong> 9,800 km</p>
+                            <p><strong>Tiempo estimado:</strong> 18 días</p>
+                            <p><strong>Modo de transporte:</strong> Marítimo</p>
+                        </div>
+                    </div>
+
+                    <div class="tool-card">
+                        <h3><i class="fas fa-cube"></i> Simulación de Flujo de Contenedores</h3>
+                        <p>Visualización del proceso portuario con indicadores de desempeño</p>
+                        <div class="flexsim-container">
+                            <div>Simulación Animada - Flujo de Contenedores</div>
+                        </div>
+                        <div class="kpis">
+                            <div class="kpi-card">
+                                <div>Tiempo Promedio</div>
+                                <div class="kpi-value">4.2 hrs</div>
+                            </div>
+                            <div class="kpi-card">
+                                <div>% Operaciones Conformes</div>
+                                <div class="kpi-value">96.8%</div>
+                            </div>
+                            <div class="kpi-card">
+                                <div>Emisiones CO₂</div>
+                                <div class="kpi-value">2.4 ton</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fase 3: Realidad Virtual de Operaciones Portuarias -->
+        <section id="fase3" class="fase-section">
+            <div class="container">
+                <div class="fase-header">
+                    <h2>Fase 3: Realidad Virtual de Operaciones Portuarias</h2>
+                    <p>Experiencia inmersiva que integra operaciones portuarias y estándares de calidad</p>
+                </div>
+
+                <div class="vr-container">
+                    <h3><i class="fas fa-vr-cardboard"></i> Entorno 3D Interactivo</h3>
+                    <div class="instrucciones">
+                        <h4>Instrucciones de uso:</h4>
+                        <ul>
+                            <li>Usa las teclas WASD o el joystick para moverte</li>
+                            <li>Haz clic en los contenedores para ver su estado e historial</li>
+                            <li>Busca íconos de calidad ⚠ para identificar puntos de control</li>
+                            <li>Completa la inspección virtual para ver el resumen</li>
+                        </ul>
+                    </div>
+                    <div class="vr-placeholder">
+                        <i class="fas fa-cube"></i> Entorno 3D de Realidad Virtual
+                    </div>
+
+                    <h4 style="margin-top: 2rem;">Contenedores en el Puerto</h4>
+                    <div class="contenedores-grid">
+                        <div class="contenedor aprobado">
+                            <div class="estado-icon"><i class="fas fa-check-circle"></i></div>
+                            <div>Contenedor 001</div>
+                            <div>Aprobado</div>
+                        </div>
+                        <div class="contenedor revision">
+                            <div class="estado-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div>Contenedor 002</div>
+                            <div>En Revisión</div>
+                        </div>
+                        <div class="contenedor no-conforme">
+                            <div class="estado-icon"><i class="fas fa-times-circle"></i></div>
+                            <div>Contenedor 003</div>
+                            <div>No Conforme</div>
+                        </div>
+                        <div class="contenedor aprobado">
+                            <div class="estado-icon"><i class="fas fa-check-circle"></i></div>
+                            <div>Contenedor 004</div>
+                            <div>Aprobado</div>
+                        </div>
+                    </div>
+
+                    <div class="resumen-vr">
+                        <h4><i class="fas fa-chart-bar"></i> Resumen de la Experiencia</h4>
+                        <div class="resumen-stats">
+                            <div class="stat-card">
+                                <div class="stat-number">12</div>
+                                <div>Contenedores Inspeccionados</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">2</div>
+                                <div>No Conformidades</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">92%</div>
+                                <div>Cumplimiento de Tiempos</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fase 4: Inteligencia Artificial Predictiva -->
+        <section id="fase4" class="fase-section">
+            <div class="container">
+                <div class="fase-header">
+                    <h2>Fase 4: Inteligencia Artificial Predictiva</h2>
+                    <p>Predicción inteligente de rutas y tiempos logísticos</p>
+                </div>
+
+                <div class="ia-container">
+                    <div class="ia-input">
+                        <h3><i class="fas fa-robot"></i> Sistema de Predicción Logística AI</h3>
+                        <p>Ingrese un producto para generar automáticamente su ruta logística óptima</p>
+                        <div class="ia-form">
+                            <input type="text" class="ia-input-field" id="producto-input" placeholder="Ej: café, flores, camarón, cacao..." />
+                            <button class="ia-submit-btn" onclick="generarRutaIA()">
+                                <i class="fas fa-search"></i> Generar Ruta
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="ia-results" id="ia-results">
+                        <div class="ruta-completa">
+                            <h3><i class="fas fa-route"></i> Ruta Completa Optimizada</h3>
+                            <div class="tramos-ruta">
+                                <div class="tramo">
+                                    <h4><i class="fas fa-warehouse"></i> Origen: Finca Cafetalera - Manabí</h4>
+                                    <p>Transporte terrestre a centro de acopio</p>
+                                    <p><strong>Distancia:</strong> 45 km | <strong>Tiempo:</strong> 1.2 hrs</p>
+                                </div>
+                                <div class="tramo">
+                                    <h4><i class="fas fa-industry"></i> Centro de Acopio - Portoviejo</h4>
+                                    <p>Procesamiento y embalaje</p>
+                                    <p><strong>Distancia:</strong> 120 km | <strong>Tiempo:</strong> 2.5 hrs</p>
+                                </div>
+                                <div class="tramo">
+                                    <h4><i class="fas fa-anchor"></i> Puerto de Guayaquil</h4>
+                                    <p>Embarque marítimo internacional</p>
+                                    <p><strong>Distancia:</strong> 280 km | <strong>Tiempo:</strong> 4.5 hrs</p>
+                                </div>
+                                <div class="tramo">
+                                    <h4><i class="fas fa-ship"></i> Transporte Marítimo - Rotterdam</h4>
+                                    <p>Ruta transpacífica optimizada</p>
+                                    <p><strong>Distancia:</strong> 15,800 km | <strong>Tiempo:</strong> 22 días</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="transporte-info">
+                            <div class="info-card">
+                                <div>Medios de Transporte</div>
+                                <div class="info-value">Terrestre + Marítimo</div>
+                            </div>
+                            <div class="info-card">
+                                <div>Kilómetros Totales</div>
+                                <div class="info-value">16,245 km</div>
+                            </div>
+                            <div class="info-card">
+                                <div>Tiempo Total Estimado</div>
+                                <div class="info-value">22.5 días</div>
+                            </div>
+                            <div class="info-card">
+                                <div>Emisiones CO₂</div>
+                                <div class="info-value">3.2 ton</div>
+                            </div>
+                        </div>
+
+                        <div class="mapa-dinamico">
+                            <div>Mapa Dinámico Generado - Ruta AI Optimizada</div>
+                        </div>
+
+                        <div class="analisis-predictivo">
+                            <h3><i class="fas fa-chart-line"></i> Análisis Predictivo</h3>
+                            <p><strong>Eficiencia:</strong> Ruta óptima basada en condiciones climáticas y tráfico marítimo actual</p>
+                            <p><strong>Riesgos Identificados:</strong> Posible retraso de 12 horas en puerto de origen debido a condiciones climáticas</p>
+                            <p><strong>Costo Aproximado:</strong> $2,450 USD (incluye transporte, seguro y manipuleo)</p>
+                        </div>
+
+                        <button class="download-btn" onclick="descargarInforme()">
+                            <i class="fas fa-file-pdf"></i> Descargar Informe PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="banner">
+            <div class="container">
+                Comprometidos con la calidad (ISO 9001), la trazabilidad y la sostenibilidad en la logística portuaria.
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Visualización de Rutas Logísticas Portuarias. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <div class="back-to-top" onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <script>
+        // Navigation functions
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.fase-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Scroll to section
+            document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // ISO Info toggle
+        function showISOInfo(zona) {
+            // Hide all ISO info
+            document.querySelectorAll('.iso-info').forEach(info => {
+                info.style.display = 'none';
+            });
+            
+            // Show selected info
+            document.getElementById(`iso-info-${zona}`).style.display = 'block';
+        }
+
+        // Product selector
+        function selectProducto(producto) {
+            // Remove active class from all buttons
+            document.querySelectorAll('.producto-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Add active class to selected button
+            event.target.classList.add('active');
+        }
+
+        // IA Route Generator
+        function generarRutaIA() {
+            const producto = document.getElementById('producto-input').value.trim();
+            if (!producto) {
+                alert('Por favor ingrese un producto');
+                return;
+            }
+
+            // Show results
+            document.getElementById('ia-results').style.display = 'block';
+            
+            // Scroll to results
+            document.getElementById('ia-results').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Download PDF
+        function descargarInforme() {
+            alert('Informe PDF generado y descargado exitosamente.\nEste es un prototipo - en implementación real se generaría el archivo PDF.');
+        }
+
+        // Scroll to top
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Back to top button visibility
+        window.addEventListener('scroll', function() {
+            const backToTop = document.querySelector('.back-to-top');
+            if (window.pageYOffset > 300) {
+                backToTop.style.display = 'flex';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+
+        // Mobile menu toggle
+        document.querySelector('.menu-toggle').addEventListener('click', function() {
+            document.querySelector('nav ul').classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', function() {
+                document.querySelector('nav ul').classList.remove('active');
+            });
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show portada by default
+            document.getElementById('portada').style.display = 'block';
+        });
+    </script>
+</body>
+</html>
