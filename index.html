@@ -844,32 +844,53 @@
                             <div class="quiz-container">
                                 <h3>Cuestionario Interactivo</h3>
                                 <div class="question">
-                                    <h4>1. ¿Cuál es el propósito principal de la norma ISO 9001 en logística portuaria?</h4>
+                                    <h4>1. ¿Cuál de las siguientes NO es una función principal de los Sistemas de Información Geográfica (SIG) en logística?</h4>
                                     <div class="options">
-                                        <div class="option">A) Reducir costos operativos</div>
-                                        <div class="option">B) Establecer un sistema de gestión de calidad</div>
-                                        <div class="option">C) Aumentar la velocidad de procesamiento</div>
-                                        <div class="option">D) Mejorar la seguridad laboral</div>
+                                        <div class="option" data-value="A">A) Visualizar rutas en mapas digitales</div>
+                                        <div class="option" data-value="B">B) Generar rutas en tiempo real con ajuste automático ante congestión vial</div>
+                                        <div class="option" data-value="C">C) Analizar datos espaciales como distancias, pendientes y restricciones de peso</div>
+                                        <div class="option" data-value="D">D) Integrar bases de datos logísticas con información geográfica</div>
                                     </div>
                                 </div>
                                 <div class="question">
-                                    <h4>2. ¿Qué proceso es fundamental para el control de calidad en puertos?</h4>
+                                    <h4>2. ¿Qué componente de un puerto se encarga específicamente de proteger el interior de las olas y corrientes marinas?</h4>
                                     <div class="options">
-                                        <div class="option">A) Inspección de mercancías</div>
-                                        <div class="option">B) Marketing de servicios</div>
-                                        <div class="option">C) Desarrollo de software</div>
-                                        <div class="option">D) Capacitación administrativa</div>
+                                        <div class="option" data-value="A">A) Dársena de maniobra</div>
+                                        <div class="option" data-value="B">B) Canal de acceso</div>
+                                        <div class="option" data-value="C">C) Diques de abrigo (rompeolas)</div>
+                                        <div class="option" data-value="D">D) Plataforma portuaria</div>
                                     </div>
                                 </div>
                                 <div class="question">
-                                    <h4>3. ¿Cuál norma ISO se enfoca en la gestión ambiental en operaciones portuarias?</h4>
+                                    <h4>3. ¿Qué tipo de software logístico utiliza algoritmos del Problema del Viajante (TSP) y del Problema de Ruteo de Vehículos (VRP) para optimizar entregas?</h4>
                                     <div class="options">
-                                        <div class="option">A) ISO 9001</div>
-                                        <div class="option">B) ISO 14001</div>
-                                        <div class="option">C) ISO 28000</div>
-                                        <div class="option">D) ISO 45001</div>
+                                        <div class="option" data-value="A">A) Sistemas de Gestión de Transporte (TMS)</div>
+                                        <div class="option" data-value="B">B) Plataformas de navegación como Waze</div>
+                                        <div class="option" data-value="C">C) Software de Optimización de Rutas Logísticas</div>
+                                        <div class="option" data-value="D">D) Aplicaciones de telemetría vehicular</div>
                                     </div>
                                 </div>
+                                <div class="question">
+                                    <h4>4. ¿En qué zona portuaria se almacenan temporalmente los contenedores antes de su transporte terrestre o marítimo?</h4>
+                                    <div class="options">
+                                        <div class="option" data-value="A">A) Almacenes aduaneros</div>
+                                        <div class="option" data-value="B">B) Plataforma portuaria</div>
+                                        <div class="option" data-value="C">C) Patios de contenedores</div>
+                                        <div class="option" data-value="D">D) Terminales Ro-Ro</div>
+                                    </div>
+                                </div>
+                                <div class="question">
+                                    <h4>5. ¿Cuál de las siguientes herramientas permite simular escenarios logísticos como demanda, tráfico y tiempos de carga antes de implementarlos en la realidad?</h4>
+                                        <div class="options">
+                                        <div class="option" data-value="A">A) Google Maps API</div>
+                                        <div class="option" data-value="B">B) FlexSim</div>
+                                        <div class="option" data-value="C">C) Onfleet</div>
+                                        <div class="option" data-value="D">D) Geotab</div>
+                                    </div>
+                                </div>
+                                <button onclick="calificarQuiz()" class="card-button">Enviar respuestas</button>
+                                <h3 id="resultado-final" style="margin-top:20px; display:none;"></h3>
+                                <button id="reinicio" onclick="reiniciarQuiz()" class="card-button" style="display:none;">Volver a intentar</button>
                             </div>
                         </div>
 
@@ -1747,5 +1768,58 @@ function abrirPDF(nombrePDF) {
 }
 
     </script>
+
+<script>
+let respuestas = {
+    1: "B",
+    2: "C",
+    3: "C",
+    4: "C",
+    5: "B"
+};
+
+document.querySelectorAll(".option").forEach(op => {
+    op.addEventListener("click", function() {
+        let parent = this.parentNode;
+        parent.querySelectorAll(".option").forEach(o => o.style.background = "rgba(30, 41, 59, 0.5)");
+        this.style.background = "rgba(59, 130, 246, 0.3)";
+        this.setAttribute("selected", "true");
+    });
+});
+
+function calificarQuiz() {
+    let puntaje = 0;
+    let preguntas = document.querySelectorAll(".question");
+
+    preguntas.forEach((pregunta, index) => {
+        let seleccionada = pregunta.querySelector(".option[selected='true']");
+        if (seleccionada && seleccionada.getAttribute("data-value") === respuestas[index+1]) {
+            puntaje++;
+        }
+    });
+
+    let resDiv = document.getElementById("resultado-final");
+    resDiv.style.display = "block";
+    resDiv.textContent = `Tu puntaje final es: ${puntaje}/5`;
+
+    if(puntaje===5){
+        resDiv.style.color = "#22c55e";
+    } else {
+        resDiv.style.color = "#f87171";
+    }
+
+    document.getElementById("reinicio").style.display = "inline-block";
+}
+
+function reiniciarQuiz(){
+    document.querySelectorAll(".option").forEach(o => {
+        o.style.background = "rgba(30, 41, 59, 0.5)";
+        o.removeAttribute("selected");
+    });
+    document.getElementById("resultado-final").style.display = "none";
+    document.getElementById("reinicio").style.display = "none";
+}
+</script>
+
 </body>
 </html>
