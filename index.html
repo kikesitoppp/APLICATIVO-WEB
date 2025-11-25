@@ -1041,7 +1041,18 @@
         <div class="result-item"><span class="info-label">Emisiones CO₂:</span> <span class="info-value" id="resultado-co2">-</span></div>
         <div class="result-item"><span class="info-label">Nodos Intermedios:</span> <span class="info-value" id="resultado-nodos">-</span></div>
     </div>
-
+<!-- AQUÍ VA EL BOTÓN -->
+<button class="download-btn" onclick="generarPDF()" style="
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: #2271b3;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+">
+    Descargar análisis en PDF
+</button>
 </div>
 
 
@@ -1796,6 +1807,46 @@ function abrirPDF(nombrePDF) {
     document.body.removeChild(link);
 }
 
+// ========================
+// FUNCIÓN PARA GENERAR PDF
+// ========================
+async function generarPDF() {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF();
+
+    const producto = document.getElementById("resultado-producto").textContent;
+    const ruta = document.getElementById("resultado-ruta").textContent;
+    const transporte = document.getElementById("resultado-transporte").textContent;
+    const tiempo = document.getElementById("resultado-tiempo").textContent;
+    const distancia = document.getElementById("resultado-distancia").textContent;
+    const co2 = document.getElementById("resultado-co2").textContent;
+    const nodos = document.getElementById("resultado-nodos").textContent;
+
+    // Capturar imagen del mapa SVG
+    const mapa = document.querySelector('.ia-map');
+    const imgData = await html2canvas(mapa).then(canvas => canvas.toDataURL("image/png"));
+
+    // Texto del PDF
+    pdf.setFontSize(18);
+    pdf.text("INFORME DE RUTA INTELIGENTE", 20, 20);
+
+    pdf.setFontSize(12);
+    pdf.text(`Producto: ${producto}`, 20, 40);
+    pdf.text(`Ruta: ${ruta}`, 20, 50);
+    pdf.text(`Modo de Transporte: ${transporte}`, 20, 60);
+    pdf.text(`Tiempo Estimado: ${tiempo}`, 20, 70);
+    pdf.text(`Distancia Total: ${distancia}`, 20, 80);
+    pdf.text(`Emisiones CO₂: ${co2}`, 20, 90);
+    pdf.text(`Nodos Logísticos: ${nodos}`, 20, 100);
+
+    // Imagen del mapa
+    pdf.text("Mapa de la Ruta:", 20, 115);
+    pdf.addImage(imgData, "PNG", 20, 125, 160, 80);
+
+    // Guardar PDF
+    pdf.save(`Analisis_${producto}.pdf`);
+}
+
     </script>
 
 <script>
@@ -1849,6 +1900,9 @@ function reiniciarQuiz(){
     document.getElementById("reinicio").style.display = "none";
 }
 </script>
-
+        
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+        
 </body>
 </html>
