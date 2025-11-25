@@ -841,35 +841,122 @@
                             <p style="text-align: center; margin-top: 10px; color: #94a3b8;">Calidad en operaciones portuarias: del estándar a la práctica
 </p>
                             
-                            <div class="quiz-container">
-                                <h3>Cuestionario Interactivo</h3>
-                                <div class="question">
-                                    <h4>1. ¿Cuál es el propósito principal de la norma ISO 9001 en logística portuaria?</h4>
-                                    <div class="options">
-                                        <div class="option">A) Reducir costos operativos</div>
-                                        <div class="option">B) Establecer un sistema de gestión de calidad</div>
-                                        <div class="option">C) Aumentar la velocidad de procesamiento</div>
-                                        <div class="option">D) Mejorar la seguridad laboral</div>
-                                    </div>
+<div class="app-container">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h1>Visualización Logística Portuaria</h1>
+        </div>
+        <div class="menu-item active" data-section="portada">
+            <i class="fas fa-home"></i>
+            <span>Portada</span>
+        </div>
+        <div class="menu-item" data-section="fase1">
+            <i class="fas fa-clipboard-check"></i>
+            <span>Fase 1 - Conceptos y Normas</span>
+        </div>
+        <div class="menu-item" data-section="fase2">
+            <i class="fas fa-map-marked-alt"></i>
+            <span>Fase 2 - Mapa Interactivo</span>
+        </div>
+        <div class="menu-item" data-section="fase3">
+            <i class="fas fa-project-diagram"></i>
+            <span>Fase 3 - Simulación de Flujo</span>
+        </div>
+        <div class="menu-item" data-section="fase4">
+            <i class="fas fa-robot"></i>
+            <span>Fase 4 - IA Predictiva</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="content-area">
+
+            <!-- Portada Section -->
+            <div class="content-section active" id="portada">
+                <div class="portada">
+                    <h1>Visualización de rutas logísticas y operaciones portuarias mediante herramientas digitales con enfoque en calidad</h1>
+                    <p>Herramientas digitales para una logística portuaria eficiente, trazable y comprometida con la calidad.</p>
+                </div>
+            </div>
+
+            <!-- Fase 1 Section -->
+            <div class="content-section" id="fase1">
+                <div class="fase1-container">
+                    <div class="fase1-content">
+                        <h2><i class="fas fa-clipboard-check"></i> Fase 1 - Conceptos y Normas de Calidad</h2>
+                        
+                        <p>La logística portuaria es el conjunto de actividades que permiten la recepción, almacenamiento, manipulación y despacho eficiente de mercancías a través de instalaciones portuarias. Involucra coordinación entre múltiples actores como navieras, agentes aduanales, transportistas y autoridades portuarias.</p>
+                        
+                        <p>El control de calidad basado en normas ISO garantiza procesos estandarizados, mejora continua y satisfacción del cliente mediante la identificación y gestión sistemática de riesgos operativos.</p>
+                        
+                        <div class="video-container">
+                            <iframe src="https://www.youtube.com/embed/Cow8OJ3ZzDU" frameborder="0" allowfullscreen></iframe>
+                        </div>
+                        <p style="text-align: center; margin-top: 10px; color: #94a3b8;">Calidad en operaciones portuarias: del estándar a la práctica
+</p>
+                        
+                        <!-- 🚨 NUEVO QUIZ 🚨 -->
+                        <div class="quiz-container">
+                            <h3>Cuestionario Interactivo</h3>
+
+                            <div class="question">
+                                <h4>1. ¿Cuál de las siguientes NO es una función principal de los Sistemas de Información Geográfica (SIG) en logística?</h4>
+                                <div class="options">
+                                    <div class="option" data-value="A">A) Visualizar rutas en mapas digitales</div>
+                                    <div class="option" data-value="B">B) Generar rutas en tiempo real con ajuste automático ante congestión vial</div>
+                                    <div class="option" data-value="C">C) Analizar datos espaciales como distancias, pendientes y restricciones de peso</div>
+                                    <div class="option" data-value="D">D) Integrar bases de datos logísticas con información geográfica</div>
                                 </div>
-                                <div class="question">
-                                    <h4>2. ¿Qué proceso es fundamental para el control de calidad en puertos?</h4>
-                                    <div class="options">
-                                        <div class="option">A) Inspección de mercancías</div>
-                                        <div class="option">B) Marketing de servicios</div>
-                                        <div class="option">C) Desarrollo de software</div>
-                                        <div class="option">D) Capacitación administrativa</div>
-                                    </div>
+                            </div>
+
+                            <div class="question">
+                                <h4>2. ¿Qué componente de un puerto se encarga específicamente de proteger el interior de las olas y corrientes marinas?</h4>
+                                <div class="options">
+                                    <div class="option" data-value="A">A) Dársena de maniobra</div>
+                                    <div class="option" data-value="B">B) Canal de acceso</div>
+                                    <div class="option" data-value="C">C) Diques de abrigo (rompeolas)</div>
+                                    <div class="option" data-value="D">D) Plataforma portuaria</div>
                                 </div>
-                                <div class="question">
-                                    <h4>3. ¿Cuál norma ISO se enfoca en la gestión ambiental en operaciones portuarias?</h4>
-                                    <div class="options">
-                                        <div class="option">A) ISO 9001</div>
-                                        <div class="option">B) ISO 14001</div>
-                                        <div class="option">C) ISO 28000</div>
-                                        <div class="option">D) ISO 45001</div>
-                                    </div>
+                            </div>
+
+                            <div class="question">
+                                <h4>3. ¿Qué tipo de software logístico utiliza algoritmos del Problema del Viajante (TSP) y del Problema de Ruteo de Vehículos (VRP) para optimizar entregas?</h4>
+                                <div class="options">
+                                    <div class="option" data-value="A">A) Sistemas de Gestión de Transporte (TMS)</div>
+                                    <div class="option" data-value="B">B) Plataformas de navegación como Waze</div>
+                                    <div class="option" data-value="C">C) Software de Optimización de Rutas Logísticas</div>
+                                    <div class="option" data-value="D">D) Aplicaciones de telemetría vehicular</div>
                                 </div>
+                            </div>
+
+                            <div class="question">
+                                <h4>4. ¿En qué zona portuaria se almacenan temporalmente los contenedores antes de su transporte terrestre o marítimo?</h4>
+                                <div class="options">
+                                    <div class="option" data-value="A">A) Almacenes aduaneros</div>
+                                    <div class="option" data-value="B">B) Plataforma portuaria</div>
+                                    <div class="option" data-value="C">C) Patios de contenedores</div>
+                                    <div class="option" data-value="D">D) Terminales Ro-Ro</div>
+                                </div>
+                            </div>
+
+                            <div class="question">
+                                <h4>5. ¿Cuál de las siguientes herramientas permite simular escenarios logísticos como demanda, tráfico y tiempos de carga antes de implementarlos en la realidad?</h4>
+                                <div class="options">
+                                    <div class="option" data-value="A">A) Google Maps API</div>
+                                    <div class="option" data-value="B">B) FlexSim</div>
+                                    <div class="option" data-value="C">C) Onfleet</div>
+                                    <div class="option" data-value="D">D) Geotab</div>
+                                </div>
+                            </div>
+
+                            <button onclick="calificarQuiz()" class="card-button">Enviar respuestas</button>
+                            <h3 id="resultado-final" style="margin-top:20px; display:none;"></h3>
+                            <button id="reinicio" onclick="reiniciarQuiz()" class="card-button" style="display:none;">Volver a intentar</button>
+                        </div>
+                    </div>
+
                             </div>
                         </div>
 
