@@ -1708,24 +1708,53 @@ var blueIcon = L.icon({
 
         // IA Analysis for Phase 4
         function analizarRuta() {
-            const producto = document.getElementById('producto-input').value || 'Cacao';
+            const input = document.getElementById("producto-input").value.trim().toLowerCase();
+        
+            if (!input) {
+                alert("Por favor ingresa un producto.");
+                return;
+            }
+        
+            // Buscar coincidencia con tu lista de productos
+            const producto = products.find(p => p.name.toLowerCase().includes(input));
+        
+            if (!producto) {
+                alert("Producto no encontrado. Intenta con otro nombre.");
+                return;
+            }
+        
+            // ----------- IA LIGERA (Análisis inteligente) --------------
+            const roadDist = calculateDistance(producto.coords.origin, producto.coords.originPort);
+            const seaDist = calculateRouteDistance(producto.seaRoute);
+            const totalDist = roadDist + seaDist;
+        
+            const transporte = seaDist < 3000 ? "Camión + Barco" :
+                               seaDist < 9000 ? "Transporte Reefer + Buque Panamax" :
+                                                "Buque de Ultramar + Transporte Terrestre";
+        
+            const tiempoEstimado = Math.round(totalDist / 600);  // km/día promedio
+            const co2 = Math.round(totalDist * 0.015);           // factor simple CO2
+            const nodos = producto.seaRoute.length;
+        
+            // ----------- MOSTRAR RESULTADOS ----------------
+            document.getElementById("resultado-producto").textContent = producto.name;
+            document.getElementById("resultado-ruta").textContent = producto.origin + " → " + producto.destPort;
+            document.getElementById("resultado-transporte").textContent = transporte;
+            document.getElementById("resultado-tiempo").textContent = tiempoEstimado + " días";
+            document.getElementById("resultado-distancia").textContent = totalDist.toLocaleString() + " km";
+            document.getElementById("resultado-co2").textContent = co2 + " kg CO₂";
+            document.getElementById("resultado-nodos").textContent = nodos;
+        
+            // Mostrar resultados
             const resultados = document.getElementById('ia-results');
-            
-            // Update result values
-            document.getElementById('resultado-producto').textContent = producto;
-            document.getElementById('resultado-ruta').textContent = 'Guayaquil → Rotterdam (Holanda)';
-            document.getElementById('resultado-transporte').textContent = 'Marítimo + Terrestre';
-            document.getElementById('resultado-tiempo').textContent = '28 días';
-            document.getElementById('resultado-distancia').textContent = '9,850 km';
-            document.getElementById('resultado-co2').textContent = '12.4 toneladas';
-            document.getElementById('resultado-nodos').textContent = 'Puerto Balao, Panamá, Cartagena';
-            
-            // Show results
             resultados.style.display = 'block';
-            
-            // Scroll to results
+        
+            // Mostrar ruta en el mapa
+            showRoute(producto);
+        
             resultados.scrollIntoView({ behavior: 'smooth' });
         }
+
 
 
         // Download PDF functionality
